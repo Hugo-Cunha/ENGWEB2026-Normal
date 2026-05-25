@@ -1,6 +1,10 @@
 // queries.txt — EngWeb2026 Exame Normal — Exercício 1.2
 // Base de dados: jogostabuleiro | Collection: jogos
 
+Comando para entrar:
+docker exec -it mongo_jogos mongosh
+use jogostabuleiro
+
 // 1. Quantos jogos estão registados na base de dados?
 db.jogos.countDocuments()
 R: 27
