@@ -1,0 +1,58 @@
+[
+  {
+    "titulo": "O Nome da Rosa",
+    "autor": "Umberto Eco",
+    "paginas": 502,
+    "genero": "Mistério",
+    "lido": true
+  },
+  {
+    "titulo": "Dom Quixote",
+    "autor": "Miguel de Cervantes",
+    "paginas": 863,
+    "genero": "Clássico",
+    "lido": false
+  },
+  {
+    "titulo": "O Senhor dos Anéis",
+    "autor": "J.R.R. Tolkien",
+    "paginas": 1178,
+    "genero": "Fantasia",
+    "lido": true
+  },
+  {
+    "titulo": "Duna",
+    "autor": "Frank Herbert",
+    "paginas": 604,
+    "genero": "Ficção Científica",
+    "lido": false
+  },
+  {
+    "titulo": "Crime e Castigo",
+    "autor": "Fiódor Dostoiévski",
+    "paginas": 671,
+    "genero": "Clássico",
+    "lido": false
+  },
+  {
+    "titulo": "O Código Da Vinci",
+    "autor": "Dan Brown",
+    "paginas": 447,
+    "genero": "Thriller",
+    "lido": true
+  },
+  {
+    "titulo": "Cem Anos de Solidão",
+    "autor": "Gabriel García Márquez",
+    "paginas": 417,
+    "genero": "Realismo Mágico",
+    "lido": false
+  },
+  {
+    "titulo": "O Hobbit",
+    "autor": "J.R.R. Tolkien",
+    "paginas": 310,
+    "genero": "Fantasia",
+    "lido": true
+  }
+]

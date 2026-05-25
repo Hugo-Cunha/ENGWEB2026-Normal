@@ -1,0 +1,63 @@
+services:
+
+  # 1. Base de Dados — NÃO exposta para o exterior (apenas rede interna)
+  mongo:
+    image: mongo:7
+    container_name: mongo_leituras
+    # SEM "ports:" — MongoDB apenas acessível internamente pela API
+    volumes:
+      - mongo_leituras_data:/data/db
+    networks:
+      - leituras-network
+
+  # 2. Seeder — importa o dataset inicial uma única vez
+  seeder:
+    build:
+      context: ./api-dados
+      dockerfile: Dockerfile.seeder
+    container_name: leituras_seeder
+    environment:
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+    depends_on:
+      - mongo
+    networks:
+      - leituras-network
+    restart: on-failure
+
+  # 3. API de Dados — exposta na porta 19020
+  api-dados:
+    build: ./api-dados
+    container_name: api_leituras
+    ports:
+      - "19020:19020"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/leituras
+      - PORT=19020
+    depends_on:
+      - mongo
+      - seeder
+    networks:
+      - leituras-network
+    restart: on-failure
+
+  # 4. Servidor Nginx — serve o index.html na porta 19021
+  nginx:
+    image: nginx:alpine
+    container_name: nginx_leituras
+    ports:
+      - "19021:19021"
+    volumes:
+      - ./nginx/index.html:/usr/share/nginx/html/index.html:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - api-dados
+    networks:
+      - leituras-network
+
+networks:
+  leituras-network:
+    driver: bridge
+
+volumes:
+  mongo_leituras_data:

@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  title: API Jogos de Tabuleiro
+  description: API de dados sobre jogos de tabuleiro. Base de dados jogostabuleiro, collection jogos.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:17000
+    description: Servidor local (Docker)
+
+components:
+  schemas:
+    Autor:
+      type: object
+      properties:
+        id: { type: string, example: "klaus-teuber" }
+        name: { type: string, example: "Klaus Teuber" }
+
+    Editora:
+      type: object
+      properties:
+        id: { type: string, example: "kosmos" }
+        name: { type: string, example: "KOSMOS" }
+        country: { type: string, example: "Germany" }
+
+    Mecanica:
+      type: object
+      properties:
+        id: { type: string, example: "dice-rolling" }
+        name: { type: string, example: "Dice Rolling" }
+
+    Premio:
+      type: object
+      properties:
+        id: { type: string, example: "sdj-1995" }
+        name: { type: string, example: "Spiel des Jahres" }
+        year: { type: integer, example: 1995 }
+
+    JogoResumido:
+      type: object
+      properties:
+        _id: { type: string, example: "catan" }
+        name: { type: string, example: "Catan" }
+        year: { type: integer, example: 1995 }
+        category: { type: string, example: "Family" }
+        minPlayers: { type: integer, example: 3 }
+
+    JogoCompleto:
+      type: object
+      properties:
+        _id: { type: string, example: "catan" }
+        name: { type: string, example: "Catan" }
+        year: { type: integer, example: 1995 }
+        category: { type: string, example: "Family" }
+        minPlayers: { type: integer, example: 3 }
+        maxPlayers: { type: integer, example: 4 }
+        playingTimeMinutes: { type: integer, example: 120 }
+        descriptionEN: { type: string }
+        autores:
+          type: array
+          items: { $ref: '#/components/schemas/Autor' }
+        editoras:
+          type: array
+          items: { $ref: '#/components/schemas/Editora' }
+        mecanicas:
+          type: array
+          items: { $ref: '#/components/schemas/Mecanica' }
+        premios:
+          type: array
+          items: { $ref: '#/components/schemas/Premio' }
+
+paths:
+  /jogos:
+    get:
+      summary: Lista todos os jogos (com filtro opcional por editora)
+      tags: [Jogos]
+      parameters:
+        - name: editora
+          in: query
+          description: Filtrar por nome da editora
+          required: false
+          schema:
+            type: string
+            example: KOSMOS
+      responses:
+        '200':
+          description: Lista de jogos
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/JogoResumido' }
+
+    post:
+      summary: Adicionar um novo jogo
+      tags: [Jogos]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JogoCompleto' }
+            example:
+              _id: "novo-jogo"
+              name: "Novo Jogo"
+              year: 2024
+              category: "Strategy"
+              minPlayers: 2
+              maxPlayers: 4
+              playingTimeMinutes: 60
+              descriptionEN: "A new game."
+              autores: [{ id: "autor1", name: "Autor Um" }]
+              editoras: [{ id: "ed1", name: "Editora Um", country: "Portugal" }]
+              mecanicas: []
+              premios: []
+      responses:
+        '201':
+          description: Jogo criado com sucesso
+
+  /jogos/{id}:
+    get:
+      summary: Obter jogo por ID (todos os campos)
+      tags: [Jogos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+          example: catan
+      responses:
+        '200':
+          description: Dados completos do jogo
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/JogoCompleto' }
+        '404':
+          description: Jogo não encontrado
+
+    put:
+      summary: Atualizar dados de um jogo
+      tags: [Jogos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JogoCompleto' }
+      responses:
+        '200':
+          description: Jogo atualizado
+
+    delete:
+      summary: Eliminar um jogo
+      tags: [Jogos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Jogo eliminado
+
+  /autores:
+    get:
+      summary: Lista de autores com jogos associados (alfabética, sem repetições)
+      tags: [Autores]
+      responses:
+        '200':
+          description: Lista de autores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string }
+                    name: { type: string }
+                    jogos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id: { type: string }
+                          name: { type: string }
+
+  /categorias:
+    get:
+      summary: Lista de categorias com jogos associados (alfabética, sem repetições)
+      tags: [Categorias]
+      responses:
+        '200':
+          description: Lista de categorias
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    categoria: { type: string }
+                    jogos:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          id: { type: string }
+                          name: { type: string }

@@ -1,0 +1,8 @@
+FROM mongo:7
+
+RUN mkdir -p /app/dados
+COPY dados/jogos.json /app/dados/jogos.json
+COPY import.sh /app/import.sh
+RUN chmod +x /app/import.sh
+
+ENTRYPOINT ["/app/import.sh"]

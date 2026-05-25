@@ -1,0 +1,55 @@
+services:
+
+  mongo:
+    image: mongo:7
+    container_name: mongo_jogos
+    # Mongo NÃO exposto para o exterior (apenas rede interna)
+    volumes:
+      - mongo_jogos_data:/data/db
+    networks:
+      - jogos-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+
+  importer:
+    build:
+      context: ./api-dados
+      dockerfile: Dockerfile.importer
+    container_name: jogos_importer
+    environment:
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - jogos-network
+    restart: on-failure
+
+  api-dados:
+    build: ./api-dados
+    container_name: api_jogos
+    ports:
+      - "17000:17000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/jogostabuleiro
+      - PORT=17000
+    depends_on:
+      mongo:
+        condition: service_healthy
+      importer:
+        condition: service_completed_successfully
+    networks:
+      - jogos-network
+    restart: on-failure
+
+networks:
+  jogos-network:
+    driver: bridge
+
+volumes:
+  mongo_jogos_data:

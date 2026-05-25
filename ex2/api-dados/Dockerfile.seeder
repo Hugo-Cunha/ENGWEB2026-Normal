@@ -1,0 +1,7 @@
+FROM mongo:7
+
+COPY dados/livros.json /app/dados/livros.json
+COPY seed.sh /app/seed.sh
+RUN chmod +x /app/seed.sh
+
+ENTRYPOINT ["/app/seed.sh"]
